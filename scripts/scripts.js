@@ -13,6 +13,12 @@ import {
   loadCSS,
 } from './lib-franklin.js';
 
+import {
+  addInViewAnimationToSingleElement,
+  addInViewAnimationToMultipleElements,
+  returnLinkTarget,
+} from '../utils/helpers.js';
+
 const LCP_BLOCKS = []; // add your LCP blocks to the list
 
 /**
@@ -53,6 +59,30 @@ function buildAutoBlocks(main) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
   }
+}
+
+/* RP Add animation */
+function addBlockLevelInViewAnimation(main) {
+  const observerOptions = {
+    threshold: 0.2, // add `.in-view` class when is 20% in view
+    // rootMargin: '-10px 0px -10px 0px',
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // support block level animation as well
+  const inviewTriggerClassList = '.fade-up, .fade-in, .fade-left, .fade-right';
+  const sections = Array.from(main.querySelectorAll(inviewTriggerClassList));
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
 }
 
 /**
@@ -100,10 +130,17 @@ async function loadEager(doc) {
 async function loadLazy(doc) {
   const main = doc.querySelector('main');
   await loadBlocks(main);
+  addBlockLevelInViewAnimation(main);
 
   const { hash } = window.location;
-  const element = hash ? doc.getElementById(hash.substring(1)) : false;
-  if (hash && element) element.scrollIntoView();
+  if (hash) {
+    setTimeout(() => {
+      const element = hash ? main.querySelector(hash) : false;
+      if (element) {
+        element.scrollIntoView();
+      }
+    }, 500);
+  }
 
   loadHeader(doc.querySelector('header'));
   loadFooter(doc.querySelector('footer'));

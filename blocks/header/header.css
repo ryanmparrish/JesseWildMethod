@@ -141,6 +141,7 @@ header nav[aria-expanded="true"] .nav-hamburger-icon::after {
 /* brand */
 header .nav-brand {
   grid-area: brand;
+  
   /* flex-basis: 128px; */
   font-size: var(--heading-font-size-s);
   font-weight: 700;
@@ -272,4 +273,29 @@ header nav .nav-sections ul > li > ul > li {
 /* tools */
 header nav .nav-tools {
   grid-area: tools;
+}
+
+#lightswitch {
+  display: none;
+}
+
+.lightswitch-icon {
+  width: 24px;
+  display: flex;
+}
+
+.lightswitch-icon:hover {
+  cursor: pointer;
+}
+
+.lightswitch-icon .st1 {
+  transition:
+    transform 1s;
+  transform: translate(-5, 0);
+  
+}
+
+.theme-light .lightswitch-icon .st1 {
+  fill: white;
+  transform: translate(15px, 0);
 }

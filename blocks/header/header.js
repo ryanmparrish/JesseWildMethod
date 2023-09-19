@@ -85,6 +85,20 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
   }
 }
 
+function setTheme(themeName) {
+  localStorage.setItem('theme', themeName);
+  document.documentElement.className = themeName;
+}
+
+// function to toggle between light and dark theme
+function toggleTheme() {
+  if (localStorage.getItem('theme') === 'theme-dark') {
+    setTheme('theme-light');
+  } else {
+    setTheme('theme-dark');
+  }
+}
+
 /**
  * decorates the header, mainly the nav
  * @param {Element} block The header block element
@@ -136,10 +150,46 @@ export default async function decorate(block) {
     toggleMenu(nav, navSections, isDesktop.matches);
     isDesktop.addEventListener('change', () => toggleMenu(nav, navSections, isDesktop.matches));
 
+    const navToolsSection = nav.querySelector('.nav-tools');
+
+    // dark mode toggle
+    const sunMoonSvg = `<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    viewBox="0 0 24 24" style="enable-background:new 0 0 24 24;" xml:space="preserve">
+    <g>
+      <g>
+        <g>
+          <path d="M12.7,3.4c0,0,0.3,0,0.4,0v-3h-0.8v3C12.5,3.4,12.7,3.4,12.7,3.4z"/>
+          <path d="M6.9,5.6L4.8,3.5L4.2,4.1l2.1,2.1C6.6,6,6.7,5.8,6.9,5.6z"/>
+          <path d="M4.1,12c0,0,0-0.3,0-0.4h-3v0.8h3C4.1,12.3,4.1,12,4.1,12z"/>
+          <path d="M6.4,17.8l-2.1,2.1l0.6,0.6l2.1-2.1C6.7,18.2,6.6,18,6.4,17.8z"/>
+          <path d="M12.7,20.6c0,0-0.3,0-0.4,0v3h0.8v-3C13,20.6,12.7,20.6,12.7,20.6z"/>
+        </g>
+      </g>
+      <circle fill="currentColor" class="st0" cx="12.7" cy="12" r="7.4"/>
+      <circle class="st1" cx="16.1" cy="12" r="6.8"/>
+    </g>
+    </svg>`;
+    const toggleElm = document.createElement('div');
+    toggleElm.classList.add('toggler');
+    toggleElm.innerHTML = `<label id="switch" class="switch">
+        <input type="checkbox" id="lightswitch">
+        <span class="lightswitch-icon">${sunMoonSvg}</span>
+    </label>`;
+    toggleElm.addEventListener('change', () => toggleTheme());
+    navToolsSection.append(toggleElm);
+
     decorateIcons(nav);
     const navWrapper = document.createElement('div');
     navWrapper.className = 'nav-wrapper';
     navWrapper.append(nav);
     block.append(navWrapper);
+  }
+  // Sset the theme on initial load
+  if (localStorage.getItem('theme') === 'theme-dark') {
+    setTheme('theme-dark');
+    document.getElementById('lightswitch').checked = false;
+  } else {
+    setTheme('theme-light');
+    document.getElementById('lightswitch').checked = true;
   }
 }
